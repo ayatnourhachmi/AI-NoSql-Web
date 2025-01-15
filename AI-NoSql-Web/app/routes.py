@@ -74,7 +74,7 @@ def upload_and_process_zip():
             process_text_streams_and_store_in_pinecone(txt_streams)
 
         # Final status
-        progress_data["status"] = "You are ready to generate the key points!"
+        progress_data["status"] = "You're all set to generate the key points!"
         progress_data["progress"] = 100
         return jsonify({"message": "All files processed and indexed successfully!"}), 200
 

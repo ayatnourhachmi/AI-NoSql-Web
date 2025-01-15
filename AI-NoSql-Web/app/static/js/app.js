@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+
     // File upload handling
     const uploadButton = document.getElementById("uploadButton");
     const progressContainer = document.getElementById("progressContainer");
@@ -68,6 +69,39 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 
+   // Function to monitor the progress bar and scroll
+function monitorProgress() {
+    const specifySection = document.getElementById("keyPointInputs");
+  
+    // Scroll to the "Specify Your Prompts" section
+    specifySection.scrollIntoView({ behavior: "smooth" });
+  }
+  
+  // Simulate progress completion
+  document.getElementById("uploadButton").addEventListener("click", () => {
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const progressStatus = document.getElementById("progressStatus");
+  
+    // Simulate progress increase
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 10;
+      progressBar.style.width = `${progress}%`;
+      progressText.textContent = `${progress}%`;
+      progressStatus.textContent = progress === 100 ? "Completed" : "Initializing...";
+  
+      if (progress === 100) {
+        clearInterval(interval);
+  
+        // Trigger scroll only after progress reaches 100%
+        setTimeout(() => {
+          monitorProgress();
+        }, 500); // Optional delay for a smoother effect
+      }
+    }, 300); // Adjust the time interval as needed
+  });
+  
     const keyPointInputsDiv = document.getElementById("keyPointInputs");
     const addKeyPointButton = document.getElementById("addKeyPoint");
 
@@ -100,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function () {
         input.type = "text";
         input.id = `keyPoint_${totalKeyPoints}`;
         input.placeholder = `Enter a prompt for Key Point ${totalKeyPoints}`;
-        input.classList.add("border", "border-gray-300", "p-2", "w-full", "rounded-md");
+        input.classList.add("border", "border-gray-300", "p-2", "w-full", "rounded-md", "focus:outline-none", "focus:ring-2", "focus:ring-pink-500");
 
         // Input for the optional word limit
         const wordLimitInput = document.createElement("input");
@@ -108,18 +142,19 @@ document.addEventListener("DOMContentLoaded", function () {
         wordLimitInput.id = `keyPointWordLimit_${totalKeyPoints}`;
         wordLimitInput.placeholder = "Words";
         wordLimitInput.min = "1";
-        wordLimitInput.classList.add("border", "border-gray-300", "p-2", "w-24", "rounded-md");
+        wordLimitInput.classList.add("border", "border-gray-300", "p-2", "w-24", "rounded-md",  "focus:outline-none", "focus:ring-2", "focus:ring-pink-500");
+
         wordLimitInput.title = `Optional word limit for Key Point ${totalKeyPoints}`;
 
         // Remove button
         const removeButton = document.createElement("button");
         removeButton.classList.add(
-            "bg-red-500",
+            "bg-gray-800",
             "text-white",
             "px-3",
             "py-2",
             "rounded-md",
-            "hover:bg-red-600",
+            "hover:bg-gray-600",
             "flex-shrink-0",
             "remove-key-point"
         );
@@ -150,17 +185,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Handle "Generate Responses" button click
-    const generateResponsesButton = document.getElementById("generateResponses");
-    const loadingDiv = document.getElementById("loading");
-    const responseSection = document.getElementById("responseSection");
-    const responsesDiv = document.getElementById("responses");
-
-    generateResponsesButton.addEventListener("click", async function () {
+    document.getElementById("generateResponses").addEventListener("click", async () => {
+        const generateButton = document.getElementById("generateResponses");
+        const loadingButton = document.getElementById("loadingButton");
+        const responseSection = document.getElementById("responseSection");
+        const responsesDiv = document.getElementById("responses");
+        const keyPointInputsDiv = document.getElementById("keyPointInputs");
+    
+        // Collect key points and word limits
         const keyPoints = [];
         const wordLimits = [];
         const numKeyPoints = keyPointInputsDiv.children.length;
-
+    
         for (let i = 1; i <= numKeyPoints; i++) {
             const promptInput = document.getElementById(`keyPoint_${i}`);
             const wordLimitInput = document.getElementById(`keyPointWordLimit_${i}`);
@@ -169,15 +205,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 wordLimits.push(wordLimitInput?.value ? parseInt(wordLimitInput.value) : null); // Optional word limit
             }
         }
-
+    
         if (keyPoints.length === 0) {
             alert("Please specify at least one prompt.");
             return;
         }
-
-        // Show loading indicator
-        loadingDiv.classList.remove("hidden");
-
+    
+        // Hide "Generate Responses" button and show "Loading" button
+        generateButton.classList.add("hidden");
+        loadingButton.classList.remove("hidden");
+    
         try {
             const response = await fetch("/generate", {
                 method: "POST",
@@ -186,32 +223,70 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 body: JSON.stringify({ key_points: keyPoints, word_limits: wordLimits }),
             });
-
+    
             const data = await response.json();
-
+    
             if (response.ok) {
-                responsesDiv.innerHTML = ""; // Clear previous responses
+                // Clear previous responses
+                responsesDiv.innerHTML = "";
+    
+                // Add each response dynamically
                 data.answers.forEach((answer, index) => {
                     const responseDiv = document.createElement("div");
                     responseDiv.classList.add("mb-4", "border", "p-4", "rounded-md", "bg-gray-100");
-
+    
                     responseDiv.innerHTML = `
-                        <strong class="text-blue-600">Prompt ${index + 1}: ${answer.key_point}</strong>
+                        <strong class="text-transparent bg-clip-text bg-gradient-to-br from-blue-900 to-indigo-900">
+                            Prompt ${index + 1}: ${answer.key_point}
+                        </strong>
                         <p class="mt-2">${answer.answer}</p>
                     `;
                     responsesDiv.appendChild(responseDiv);
                 });
+    
+                // Show the response section
+                responseSection.classList.remove("hidden");
+  
+                // Scroll to the "responses" section
+                responseSection.scrollIntoView({ behavior: "smooth" });
 
-                responseSection.classList.remove("hidden"); // Show the response section
             } else {
-                alert(data.error || "Failed to fetch answers.");
+                responsesDiv.innerHTML = `
+                    <div class="mb-4 border p-4 rounded-md bg-red-100 text-red-800">
+                        <strong>Error:</strong> ${data.error || "Failed to fetch answers."}
+                    </div>
+                `;
+                responseSection.classList.remove("hidden");
             }
         } catch (error) {
             console.error("Error fetching answers:", error);
-            alert("An error occurred while fetching answers.");
+            responsesDiv.innerHTML = `
+                <div class="mb-4 border p-4 rounded-md bg-red-100 text-red-800">
+                    <strong>Error:</strong> An error occurred while fetching answers.
+                </div>
+            `;
+            responseSection.classList.remove("hidden");
         } finally {
-            // Hide loading indicator
-            loadingDiv.classList.add("hidden");
+            // Restore button visibility
+            loadingButton.classList.add("hidden");
+            generateButton.classList.remove("hidden");
         }
     });
+    
 });
+
+function showDonateAlert() {
+    Swal.fire({
+      title: "Oh OMG! You're so sweet! 🥰",
+      text: "Thank you so much for considering a donation. No need, your support means the world to us!",
+      imageUrl: 'https://media.giphy.com/media/3o7abldj0b3rxrZUxW/giphy.gif', // Cute sticker
+      imageWidth: 200,
+      imageHeight: 200,
+      imageAlt: 'Thank you sticker',
+      confirmButtonText: "You're welcome! 💖",
+      confirmButtonColor: "#f50057",
+      background: "#fffaf3", // Soft cute background
+      color: "#333",
+    });
+  }
+  

@@ -3,103 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thematic Summarization Tool</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='assets/favicon.ico') }}">
+  <title>KeyGenie: Precision Insights Tool</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
   <style>
     #progressContainer {
-  display: block;
-  margin-top: 1rem;
-}
+      display: block;
+      margin-top: 1rem;
+    }
 
-#progressBar {
-  transition: width 0.3s ease-in-out;
-}
+    #progressBar {
+      transition: width 0.3s ease-in-out;
+    }
 
-    </style>
+    /* Ensure the hover effect works */
+    figure:hover img {
+      filter: grayscale(0); /* Remove grayscale on hover */
+    }
+  </style>
+  <style>
+    .gradient-pink {
+      background: linear-gradient(135deg, #ea2088, #ee4fa1);
+    }
+  
+    .gradient-white {
+      background: linear-gradient(135deg, #ffffff, #e6e6e6);
+    }
+  
+    .gradient-dark-blue {
+      background: linear-gradient(135deg, #080b53, #300b53);
+    }
+  
+    .gradient-bright-pink {
+      background: linear-gradient(135deg, #ee4fa1, #c4136e);
+    }
+  
+    .gradient-magenta {
+      background: linear-gradient(135deg, #c4136e, #ea2088);
+    }
+  
+    .gradient-light-gray {
+      background: linear-gradient(135deg, #e6e6e6, #ffffff);
+    }
+  </style>
+
+<style>
+    .text-gradient-pink {
+      background: linear-gradient(135deg, #ea2088, #ee4fa1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    .text-gradient-white {
+      background: linear-gradient(135deg, #ffffff, #e6e6e6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    .text-gradient-dark-blue {
+      background: linear-gradient(135deg, #080b53, #300b53);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    .text-gradient-bright-pink {
+      background: linear-gradient(135deg, #ee4fa1, #c4136e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    .text-gradient-magenta {
+      background: linear-gradient(135deg, #c4136e, #ea2088);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    .text-gradient-light-gray {
+      background: linear-gradient(135deg, #e6e6e6, #ffffff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+  
+  
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col items-center">
-  <header class="w-full bg-blue-500 p-4 shadow-md text-white text-center">
-    <h1 class="text-2xl font-bold">Thematic Summarization Tool</h1>
-    <p class="text-sm">Efficiently extract and cite key information from your documents</p>
-  </header>
+    <header class="w-full py-6 shadow-lg text-white" style="background: linear-gradient(90deg, #080b53, #300b53); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <div class="flex items-center justify-center gap-4">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 83.33333333333334 83.33332550349539" height="50" width="50">
+                <g transform="translate(-9.64695542545288, -9.646959340371858) scale(1.0262725201407705)" fill="#ea2088">
+                  <circle cx="50" cy="50" r="17.8"/>
+                  <path d="M50,78.9c16,0,28.9-13,28.9-28.9c0-8.9-4-17.1-10.9-22.6l-5.3,6.7c4.9,3.9,7.7,9.7,7.7,15.9c0,11.2-9.1,20.4-20.4,20.4 c-11.2,0-20.4-9.1-20.4-20.4S38.8,29.6,50,29.6c0.9,0,1.8,0.1,2.7,0.2l1.1-8.5c-1.3-0.2-2.6-0.3-3.9-0.3c-16,0-28.9,13-28.9,28.9 C21.1,66,34,78.9,50,78.9z"/>
+                  <path d="M50,82.1c-7.3,0-14.1-2.4-19.8-6.9l-5.3,6.7c7.2,5.7,15.9,8.7,25.1,8.7c15.2,0,29-8.4,36-21.8l-7.5-3.9 C72.9,75.5,62,82.1,50,82.1z"/>
+                  <path d="M46.4,18.1c1.2-0.1,2.4-0.2,3.6-0.2c17.7,0,32.1,14.4,32.1,32.1h8.5C90.6,27.6,72.4,9.4,50,9.4c-1.5,0-3,0.1-4.5,0.2 C24.9,11.9,9.4,29.3,9.4,50c0,4.4,0.7,8.7,2.1,12.8l8.1-2.7c-1.1-3.3-1.6-6.7-1.6-10.2C17.9,33.6,30.2,19.9,46.4,18.1z"/>
+                </g>
+              </svg>
+              <h1 class="text-3xl font-bold">KeyGenie</h1>
+        </div>
+      </header>
+
+  <!-- Presentation Section -->
+  <section class="w-full relative bg-white shadow-md text-center mb-4">
+    <!-- Background Image with Hover Effects -->
+    <figure class="relative max-w-full transition-all duration-300 cursor-pointer">
+      <!-- Image with grayscale effect -->
+      <img 
+  class="w-full h-96 object-cover rounded-lg filter grayscale" 
+  src="{{ url_for('static', filename='assets/bg.jpg') }}" 
+  alt="KeyGenie Background"
+/>
+
+      <!-- Content Overlay -->
+      <div class="absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center p-6 bg-black bg-opacity-50">
+        <h2 class="text-3xl font-bold text-white mb-4">Welcome to KeyGenie</h2>
+        <p class="text-white text-lg mb-8 px-24">
+          KeyGenie empowers researchers, students, and professors to extract precise insights from complex, lengthy documents. Upload your files, specify your prompts, and watch the magic unfold!
+        </p>
+        <p class="text-gray-300 mb-4">Your support helps us grow and innovate further.</p>
+        <button 
+  class="gradient-pink text-white px-4 py-2 rounded-md hover:bg-pink-600" 
+  onclick="showDonateAlert()"
+>
+  Donate
+</button>
+
+      </div>
+    </figure>
+  </section>
 
   <main class="container mx-auto p-4">
     <!-- File Upload Section -->
     <div class="bg-white shadow-md p-6 rounded-lg mb-4">
       <h2 class="text-xl font-bold mb-2">1. Upload Your Documents</h2>
+      <div class="flex items-center space-x-4">
       <input type="file" id="fileUpload" class="border border-gray-300 p-2 w-full rounded-md" accept=".zip">
-      <button id="uploadButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 mt-2">Upload</button>
-      <p class="text-sm text-gray-500 mt-2">Upload a ZIP file containing your documents (PDFs).</p>
+      <button id="uploadButton" class="gradient-dark-blue text-white px-6 py-2 rounded-md">Upload</button></div>
+      <p class="text-sm text-gray-500 mt-2">  Upload a ZIP file containing your documents (PDFs). <b>Any other formats included in the ZIP will be skipped.</b></p>
       <div id="progressContainer" class="hidden mt-4">
         <div class="flex justify-between mb-1">
-            <span id="progressStatus" class="text-base font-medium text-blue-700 dark:text-white">Starting...</span>
-            <span id="progressText" class="text-sm font-medium text-blue-700 dark:text-white">0%</span>
+          <span id="progressStatus" class="text-base font-medium text-gradient-magenta dark:text-white">Starting...</span>
+          <span id="progressText" class="text-sm font-medium text-gradient-magenta dark:text-white">0%</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-            <div id="progressBar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+          <div id="progressBar" class="gradient-bright-pink h-2.5 rounded-full" style="width: 0%;"></div>
         </div>
-    </div>
-    
-      
+      </div>
     </div>
 
-   <!-- Key Point Customization Section -->
-<div class="bg-white shadow-md p-6 rounded-lg mb-4">
-    <h2 class="text-xl font-bold mb-2">Specify Your Prompts</h2>
-    <p class="text-sm text-gray-500 mb-4">Specify a question or theme for each prompt to guide the retrieval-based generation. Optionally, set a word limit for each prompt.</p>
-    
-    <div id="keyPointInputs" class="mb-4">
+    <!-- Key Point Customization Section -->
+    <div class="bg-white shadow-md p-6 rounded-lg mb-4">
+      <h2 class="text-xl font-bold mb-2">2. Specify Your Prompts</h2>
+      <p class="text-sm text-gray-500 mb-4">
+        Specify a question or theme for each prompt to guide the retrieval-based generation. 
+        Optionally, set a word limit for each prompt.
+      </p>
+      
+      <div id="keyPointInputs" class="mb-4">
         <!-- Initial Key Point Input -->
         <div class="flex items-center space-x-2 mb-4 key-point">
-            <input
-                type="text"
-                id="keyPoint_1"
-                class="border border-gray-300 p-2 w-full rounded-md"
-                placeholder="Enter a prompt for Key Point 1"
-            />
-            <input
-                type="number"
-                id="keyPointWordLimit_1"
-                class="border border-gray-300 p-2 w-24 rounded-md"
-                placeholder="Words"
-                min="1"
-                title="Optional word limit for Key Point 1"
-            />
-            <button
-                class="bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600 flex-shrink-0 remove-key-point"
-                title="Remove this key point"
-            >
-                -
-            </button>
+          <input
+              type="text"
+              id="keyPoint_1"
+              class="border border-gray-300 p-2 w-full rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+            placeholder="Enter a prompt for Key Point 1"
+          />
+          <input
+              type="number"
+              id="keyPointWordLimit_1"
+              class="border border-gray-300 p-2 w-24 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+              placeholder="Words"
+              min="1"
+              title="Optional word limit for Key Point 1"
+          />
+          <button
+            id="removeKeyPoint_1"
+              class="bg-gray-800 text-white px-3 py-2 rounded-md hover:bg-gray-600 flex-shrink-0 remove-key-point hidden"
+              title="Remove this key point"
+          >
+              -
+          </button>
         </div>
+      </div>
+
+      <!-- Add Key Point Button -->
+      <button id="addKeyPoint" class="gradient-bright-pink text-white px-3 py-2 rounded-md" title="Add new key point">
+          +
+      </button>
+      <!-- Default Generate Responses Button -->
+<button id="generateResponses" class="text-white gradient-dark-blue font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center">
+    Generate Responses
+  </button>
+  
+  <!-- Hidden Loading Button -->
+  <button id="loadingButton" disabled type="button" class="hidden text-white gradient-dark-blue font-medium rounded-lg text-sm px-5 py-2.5 space-x-2 inline-flex items-center">
+    <svg aria-hidden="true" role="status" class="inline w-4 h-4 me-3 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
+      <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/>
+    </svg>
+    <p class="">Loading...</p>
+</button>
+  
+
+    <!-- Response Output Section -->
+    <div class="bg-white shadow-md p-6 rounded-lg mb-4 hidden" id="responseSection">
+      <h2 class="text-xl font-bold mb-2">Responses</h2>
+      <div id="responses" class="text-black"></div>
     </div>
-
-    <!-- Add Key Point Button -->
-    <button id="addKeyPoint" class="bg-blue-500 text-white px-3 py-2 rounded-md hover:bg-blue-600">
-        +
-    </button>
-</div>
-
-  
-      <!-- Generate Response Section -->
-      <div class="bg-white shadow-md p-6 rounded-lg mb-4">
-        <h2 class="text-xl font-bold mb-2">Generate Responses</h2>
-        <button id="generateResponses" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
-          Generate Responses
-        </button>
-        <div id="loading" class="text-blue-500 mt-2 hidden">Fetching answers, please wait...</div>
-      </div>
-  
-      <!-- Response Output Section -->
-      <div class="bg-white shadow-md p-6 rounded-lg mb-4 hidden" id="responseSection">
-        <h2 class="text-xl font-bold mb-2">Responses</h2>
-        <div id="responses" class="text-gray-700"></div>
-      </div>
   </main>
 
-  <footer class="w-full bg-gray-800 p-4 text-white text-center">
-    <p>&copy; 2024 Thematic Summarization Tool. All rights reserved.</p>
+  <footer class="w-full gradient-dark-blue p-4 text-white text-center">
+    <p>&copy; 2024 KeyGenie: Precision Insights Tool. All rights reserved.</p>
   </footer>
 </body>
 </html>
