@@ -171,42 +171,61 @@ genai.configure(api_key=genai_api_key)
 genai_model = genai.GenerativeModel('gemini-1.5-flash')  # Replace with the desired model name
 
 
-# Function to generate an answer based on user-provided key points
-def generate_answer(key_points, num_key_points=3):
+# Function to generate an answer based on user-provided key points and optional word limits
+def generate_answer(key_points, word_limits=None):
+    """
+    Generate answers for the provided key points using Google Generative AI.
+
+    Args:
+        key_points (list): List of key point prompts.
+        word_limits (list): Optional list of word limits for each key point.
+
+    Returns:
+        list: A list of dictionaries containing key points and their generated answers.
+    """
     answers = []
-    
-    for i in range(num_key_points):
-        prompt = key_points[i]
+
+    if word_limits is None:
+        word_limits = [None] * len(key_points)  # Default to no word limit if not provided
+
+    for i, prompt in enumerate(key_points):
+        word_limit = word_limits[i]
         
         # Generate and normalize the query vector
         query_vector = model.encode([prompt])
         query_vector = query_vector / np.linalg.norm(query_vector)  # Normalize to unit vector
 
-        # Flatten the query_vector (ensure it's 1D)
+        # Flatten the query vector
         query_vector = query_vector.flatten().tolist()
 
         if len(query_vector) != 384:
             print(f"Error: Query vector dimension is incorrect (expected 384, got {len(query_vector)})")
+            answers.append({"key_point": prompt, "answer": "Error: Query vector dimension is incorrect."})
             continue
 
         try:
             # Search for relevant chunks based on the prompt
             results = index.query(namespace="", vector=query_vector, top_k=40, include_values=True, includeMetadata=True)
+            
             if not results or 'matches' not in results or len(results['matches']) == 0:
                 print(f"No results found for the prompt: {prompt}")
                 context = "No relevant text found."
             else:
                 context = results['matches'][0]['metadata']['text']
             
-            # Use Google Generative AI to generate the summary for the key point
-            full_prompt = f"Answer to the following question'{prompt}':\n using these documents{context}"
-            
+            # Build the full prompt for Generative AI
+            full_prompt = f"Answer the following question '{prompt}':\nUsing these documents: {context}"
+            if word_limit:
+                full_prompt += f"\n\nPlease limit the response to {word_limit} words."
+
             # Use the GenerativeModel instance to generate the content
             response = genai_model.generate_content(full_prompt)
             answer = response.text.strip()  # Extract and clean the response text
+
         except Exception as e:
+            print(f"Error generating answer for prompt '{prompt}': {str(e)}")
             answer = f"Error generating answer: {str(e)}"
 
         answers.append({"key_point": prompt, "answer": answer})
-    
+
     return answers
