@@ -49,7 +49,7 @@ def extract_text_from_pdf(pdf_content):
         return None
 
 # Initialize Pinecone instance
-pc = Pinecone(api_key="pcsk_uRWBd_9d9dj1Y23zC6WzU6uC1iZJWqKXhCVUEECGtquP7JmJPTNzzhQd2Cgs7k2HpBNYe")  # Replace with your actual API key
+pc = Pinecone(api_key="")  # Replace with your actual API key
 
 # Index configuration
 index_name = "txt-document-vectors"  # Use the name from your Pinecone UI
@@ -164,7 +164,7 @@ def process_text_streams_and_store_in_pinecone(txt_streams):
 
 
 # Configure Google Generative AI with the API key
-genai_api_key = "AIzaSyD_bmrFMFMTISMu0160udu474ZOdxMoR7A"
+genai_api_key = ""  # Replace with api key
 genai.configure(api_key=genai_api_key)
 
 # Initialize the GenerativeModel
